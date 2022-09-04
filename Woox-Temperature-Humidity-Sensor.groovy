@@ -40,7 +40,7 @@ metadata {
 	attribute "currentDay", "String"
 	attribute "batteryRuntime", "String"
 
-	fingerprint profileId: "0104", deviceId: "TS0201", inClusters: "0, 10, 1, 1026, 1029", outClusters: "25", manufacturer: "_TZ3000_rusu2vzb", model: "R7048", deviceJoinName: "Woox Temp Sensor"
+	fingerprint profileId: "0104", deviceId: "770", inClusters: "0, 10, 1, 1026, 1029", outClusters: "25", manufacturer: "_TZ3000_rusu2vzb", model: "R7048", deviceJoinName: "Woox Temp Sensor"
 
 	command "resetBatteryRuntime"
 	}
@@ -237,52 +237,7 @@ private Map parseReadAttr(String description) {
 
 	// log.debug "${device.displayName}: Parsing read attr: cluster: ${cluster}, attrId: ${attrId}, value: ${value}"
 
-	if ((cluster == "0403") && (attrId == "0000")) {
-		def result = value[0..3]
-		float pressureval = Integer.parseInt(result, 16)
-
-		if (!(settings.PressureUnits)){
-			settings.PressureUnits = "mbar"
-		}
-		// log.debug "${device.displayName}: Converting ${pressureval} to ${PressureUnits}"
-	
-		switch (PressureUnits) {
-			case "mbar":
-				pressureval = (pressureval/10) as Float
-				pressureval = pressureval.round(1);
-				break;
-
-			case "kPa":
-				pressureval = (pressureval/100) as Float
-				pressureval = pressureval.round(2);
-				break;
-
-			case "inHg":
-				pressureval = (((pressureval/10) as Float) * 0.0295300)
-				pressureval = pressureval.round(2);
-				break;
-
-			case "mmHg":
-				pressureval = (((pressureval/10) as Float) * 0.750062)
-				pressureval = pressureval.round(2);
-				break;
-		}
-		// log.debug "${device.displayName}: Pressure is ${pressureval} ${PressureUnits} before applying the pressure offset."
-
-		if (settings.pressOffset) {
-			pressureval = (pressureval + settings.pressOffset)
-		}
-
-		pressureval = pressureval.round(2);
-
-		resultMap = [
-			name: 'pressure',
-			value: pressureval,
-			unit: "${PressureUnits}",
-			isStateChange: true,
-			descriptionText : "${device.displayName} Pressure is ${pressureval} ${PressureUnits}"
-		]
-	} else if (cluster == "0000" && attrId == "0005")  {
+	if(cluster == "0" && attrId == "0005")  {
 		def modelName = ""
 	
 		// Parsing the model name
